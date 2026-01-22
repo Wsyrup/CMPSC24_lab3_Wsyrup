@@ -8,7 +8,7 @@ SRCS = intbst.cpp testbst.cpp
 OBJS = $(SRCS:.cpp=.o)
 HEADERS = intbst.h
 
-.PHONY: all clean run
+.PHONY: all clean run tests
 
 all: $(TARGET)
 
@@ -23,3 +23,6 @@ clean:
 
 run: $(TARGET)
 	./$(TARGET)
+
+tests: $(TARGET)
+	printf "0\n" | ./$(TARGET)
