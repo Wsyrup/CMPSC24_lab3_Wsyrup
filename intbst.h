@@ -11,6 +11,9 @@ using namespace std;
 class IntBST {
 
  public:
+    //temp variable for testing:
+    int cycles = 0;
+
     // ctor, dtor, insert and one print method already done in intbst.cpp:
     IntBST();                   // constructor
     ~IntBST();                  // destructor

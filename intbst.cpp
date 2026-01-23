@@ -262,5 +262,47 @@ int IntBST::getSuccessor(int value) const{
 // deletes the Node containing the given value from the tree
 // returns true if the node exist and was deleted or false if the node does not exist
 bool IntBST::remove(int value){
-    return false; // REPLACE THIS NON-SOLUTION
+    //goal: find a node and remove it, freeing its dynamic memory as well as 
+
+    //algo:
+    /*three (four) cases:
+    1. Empty tree: return false
+        a. single node: remove and return true
+
+    *For case 2, 3 we must find the node. If the search fails, we return false
+    2. Leaf node removal: If leaf, return to its parent and delete it from the parent,
+       severing the connection.
+    
+    3. Non-leaf removal: Find node. Replace its value with its predecessor value. Then,
+       recurse / repeat on the predecessor node.
+    */
+    cycles++;
+    if (!root) return false;
+
+    //find node
+    Node* to_remove = getNodeFor(value, root);
+    // cout << "currently removing node: " << value << endl;
+
+    if (!to_remove) return false;
+
+    if (!to_remove->left && !to_remove->right) { // node is a leaf
+        Node* parent = to_remove->parent;
+        if (to_remove->info < parent->info) {
+            parent->left = nullptr;
+        }
+        else {
+            parent->right = nullptr;
+        }
+        // cout << "leaf case: " << to_remove->info << endl;
+        delete to_remove;
+        return true;        
+    }
+    
+    //nonleaf case:
+    int predecessor = getPredecessor(value); //<-- maybe we can use getPredecessor by value
+    // cout << "non-leaf case, predecessor is: " << predecessor << endl;
+    remove(predecessor);
+    to_remove->info = predecessor; //"remove" the value
+    
+    return false;
 }
