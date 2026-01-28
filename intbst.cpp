@@ -304,5 +304,10 @@ bool IntBST::remove(int value){
     remove(predecessor);
     to_remove->info = predecessor; //"remove" the value
     
-    return false;
+    return true;
+
+    //fails all removal tests. I get the feeling that my algorithm is
+    //somehow incorrect. Maybe I've misunderstood what is being asked of me?
+    //i need to clarify maybe at office hours.
+    //there is something wrong. Fix this later.
 }
