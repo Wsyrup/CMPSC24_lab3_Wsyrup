@@ -277,33 +277,55 @@ bool IntBST::remove(int value){
        recurse / repeat on the predecessor node.
     */
     cycles++;
-    if (!root) return false;
+    if (!root) return false; //empty tree
 
     //find node
     Node* to_remove = getNodeFor(value, root);
     // cout << "currently removing node: " << value << endl;
 
-    if (!to_remove) return false;
+    if (!to_remove) return false; //node not found
 
     if (!to_remove->left && !to_remove->right) { // node is a leaf
         Node* parent = to_remove->parent;
         if (to_remove->info < parent->info) {
-            parent->left = nullptr;
+            parent->left = nullptr; //leaf on the left
         }
         else {
-            parent->right = nullptr;
+            parent->right = nullptr; //leaf on the right
         }
-        // cout << "leaf case: " << to_remove->info << endl;
         delete to_remove;
         return true;        
     }
     
     //nonleaf case:
-    int predecessor = getPredecessor(value); //<-- maybe we can use getPredecessor by value
-    // cout << "non-leaf case, predecessor is: " << predecessor << endl;
+    if (!to_remove->left) {
+        Node* parent = to_remove->parent;
+        if (to_remove->info < parent->info) {
+            parent->left = to_remove->right; 
+        }
+        else {
+            parent->right = to_remove->right;
+        }
+        delete to_remove;
+        return true;
+    }
+    else if (!to_remove->right) {
+        Node* parent = to_remove->parent;
+        if (to_remove->info < parent->info) {
+            parent->left = to_remove->right; 
+        }
+        else {
+            parent->right = to_remove->right;
+        }
+        delete to_remove;
+        return true;    
+    }
+
+    int predecessor = getPredecessor(value); //<-- issue lies here. 
+    //if no left child --> no left subtree --> can't call predecessor
+    //instead, simply replace with right subtree (set the parent to point to right child of current node.)
     remove(predecessor);
     to_remove->info = predecessor; //"remove" the value
-    
     return true;
 
     //fails all removal tests. I get the feeling that my algorithm is
