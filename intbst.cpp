@@ -320,13 +320,16 @@ bool IntBST::remove(int value){
         delete to_remove;
         return true;    
     }
+    else {
+        int predecessor = getPredecessor(value); //<-- issue lies here. 
+        //if no left child --> no left subtree --> can't call predecessor
+        //instead, simply replace with right subtree (set the parent to point to right child of current node.)
+        remove(predecessor);
+        to_remove->info = predecessor; //"remove" the value
+        return true;
+    }
 
-    int predecessor = getPredecessor(value); //<-- issue lies here. 
-    //if no left child --> no left subtree --> can't call predecessor
-    //instead, simply replace with right subtree (set the parent to point to right child of current node.)
-    remove(predecessor);
-    to_remove->info = predecessor; //"remove" the value
-    return true;
+    
 
     //fails all removal tests. I get the feeling that my algorithm is
     //somehow incorrect. Maybe I've misunderstood what is being asked of me?
