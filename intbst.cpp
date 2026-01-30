@@ -279,60 +279,53 @@ bool IntBST::remove(int value){
     cycles++;
     if (!root) return false; //empty tree
 
-    //find node
     Node* to_remove = getNodeFor(value, root);
-    // cout << "currently removing node: " << value << endl;
+    if (!to_remove) return false; // node not found
 
-    if (!to_remove) return false; //node not found
-
-    if (!to_remove->left && !to_remove->right) { // node is a leaf
-        Node* parent = to_remove->parent;
-        if (to_remove->info < parent->info) {
-            parent->left = nullptr; //leaf on the left
-        }
-        else {
-            parent->right = nullptr; //leaf on the right
+    // --- CASE 1: leaf ---
+    if (!to_remove->left && !to_remove->right) {
+        if (to_remove->parent) {
+            if (to_remove->parent->left == to_remove) to_remove->parent->left = nullptr;
+            else to_remove->parent->right = nullptr;
+        } else {
+            // removing the only node (root)
+            root = nullptr;
         }
         delete to_remove;
         return true;        
     }
-    
-    //nonleaf case:
-    if (!to_remove->left) {
-        Node* parent = to_remove->parent;
-        if (to_remove->info < parent->info) {
-            parent->left = to_remove->right; 
-        }
-        else {
-            parent->right = to_remove->right;
+
+    // --- CASE 2: single child ---
+    if (!to_remove->left || !to_remove->right) {
+        Node* child = to_remove->left ? to_remove->left : to_remove->right;
+
+        if (to_remove->parent) {
+            if (to_remove->parent->left == to_remove) to_remove->parent->left = child;
+            else to_remove->parent->right = child;
+            child->parent = to_remove->parent;
+        } else {
+            // removing root with one child
+            root = child;
+            child->parent = nullptr;
         }
         delete to_remove;
         return true;
     }
-    else if (!to_remove->right) {
-        Node* parent = to_remove->parent;
-        if (to_remove->info < parent->info) {
-            parent->left = to_remove->right; 
-        }
-        else {
-            parent->right = to_remove->right;
-        }
-        delete to_remove;
-        return true;    
-    }
-    else {
-        int predecessor = getPredecessor(value); //<-- issue lies here. 
-        //if no left child --> no left subtree --> can't call predecessor
-        //instead, simply replace with right subtree (set the parent to point to right child of current node.)
-        remove(predecessor);
-        to_remove->info = predecessor; //"remove" the value
-        return true;
-    }
 
-    
+    // --- CASE 3: two children ---
+    // replace value with predecessor (rightmost node in left subtree) and splice out predecessor
+    Node* pred = getPredecessorNode(value);
+    // pred must exist because to_remove->left != nullptr
+    to_remove->info = pred->info;
 
-    //fails all removal tests. I get the feeling that my algorithm is
-    //somehow incorrect. Maybe I've misunderstood what is being asked of me?
-    //i need to clarify maybe at office hours.
-    //there is something wrong. Fix this later.
+    // splice pred out (pred has no right child)
+    Node* predParent = pred->parent;
+    Node* predLeft = pred->left; // may be nullptr
+    if (predParent->left == pred) predParent->left = predLeft;
+    else predParent->right = predLeft;
+    if (predLeft) predLeft->parent = predParent;
+
+    delete pred;
+    return true;
 }
+
